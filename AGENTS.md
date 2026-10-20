@@ -642,7 +642,8 @@ Meson with `-Dguest_arch=arm64` and links `jit/guest-arm64` into the app target.
 
 The Xcode project targets Xcode 26 with an iOS 15.0 deployment target
 (`app/Project.xcconfig`). `.github/workflows/build-arm64-ipa.yml` builds the
-TrollStore TIPA on the `macos-26` GitHub runner with the newest installed
+TrollStore TIPA on the `macos-26-intel` GitHub runner (macOS arm64
+runners repeatedly failed to pick up jobs for capacity reasons) with the newest installed
 non-beta Xcode 26 and uploads it as a workflow artifact.
 
 Current unsigned device build check:
