@@ -6,9 +6,13 @@ on:
     branches:
       - 'claude/build-trollstore-ipa'
 
+concurrency:
+  group: build-arm64-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-ipa:
-    runs-on: macos-15
+    runs-on: macos-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
