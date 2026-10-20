@@ -63,6 +63,17 @@ run_bounded xcodebuild \
     CODE_SIGN_IDENTITY='' \
     EXPANDED_CODE_SIGN_IDENTITY=''
 
+# iSHFileProvider has no target dependency on the meson libraries; it links
+# -lish_emu/-lfakefs by name. Point it at the ARM64 meson build that the app
+# build just produced instead of relying on stale symlinks in $PRODUCT_DIR.
+MESON_LIB_DIR="$PRODUCT_DIR/meson"
+for lib in libish_emu.a libfakefs.a; do
+    if [[ ! -f "$MESON_LIB_DIR/$lib" ]]; then
+        echo "error: ARM64 meson library was not produced: $MESON_LIB_DIR/$lib" >&2
+        exit 1
+    fi
+done
+
 echo "building iSHFileProvider extension into $PRODUCT_DIR"
 run_bounded xcodebuild \
     -project iSH.xcodeproj \
@@ -70,6 +81,7 @@ run_bounded xcodebuild \
     -configuration "$CONFIGURATION" \
     build \
     SYMROOT="$BUILD_ROOT" \
+    LIBRARY_SEARCH_PATHS="$MESON_LIB_DIR" \
     PRODUCT_BUNDLE_IDENTIFIER="$APPEX_BUNDLE_ID" \
     PRODUCT_APP_GROUP_IDENTIFIER="$APP_GROUP_ID" \
     CODE_SIGNING_ALLOWED=NO \
