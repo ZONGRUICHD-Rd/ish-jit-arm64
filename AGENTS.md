@@ -640,6 +640,11 @@ with the exact selector env var or launch mechanism once confirmed from code.
 The `iSH-ARM64` Xcode scheme already builds the ARM64 guest libraries through
 Meson with `-Dguest_arch=arm64` and links `jit/guest-arm64` into the app target.
 
+The Xcode project targets Xcode 26 with an iOS 15.0 deployment target
+(`app/Project.xcconfig`). `.github/workflows/build-arm64-ipa.yml` builds the
+TrollStore TIPA on the `macos-26` GitHub runner with the newest installed
+non-beta Xcode 26 and uploads it as a workflow artifact.
+
 Current unsigned device build check:
 
 ```bash

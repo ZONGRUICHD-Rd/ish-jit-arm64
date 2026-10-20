@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build-ipa:
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +24,16 @@ jobs:
       - name: Install dependencies
         run: brew install ninja meson lld llvm ldid coreutils
 
+      - name: Select Xcode 26
+        run: |
+          xcode=$(ls -d /Applications/Xcode_26*.app | grep -vi beta | sort -V | tail -1)
+          echo "using $xcode"
+          sudo xcode-select -s "$xcode"
+
       - name: Show toolchain
         run: |
           xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
           meson --version
           ldid 2>&1 | head -1 || true
 
