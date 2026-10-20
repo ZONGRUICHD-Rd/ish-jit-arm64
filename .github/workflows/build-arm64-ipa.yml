@@ -1,0 +1,39 @@
+name: Build ARM64 TrollStore IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/build-trollstore-ipa'
+
+jobs:
+  build-ipa:
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      # deps/linux is only needed for the iSH+Linux kernel and is very large.
+      - name: Fetch submodules
+        run: git submodule update --init --depth 1 deps/libapps deps/libarchive
+
+      - name: Install dependencies
+        run: brew install ninja meson lld llvm ldid coreutils
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          meson --version
+          ldid 2>&1 | head -1 || true
+
+      - name: Build and package
+        run: tools/package_arm64_trollstore_ipa.sh
+        env:
+          TIMEOUT_BIN: gtimeout
+          BUILD_TIMEOUT: 90m
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iSH-ARM64-JIT-TrollStore
+          path: build/iSH-ARM64-JIT-TrollStore.tipa
+          if-no-files-found: error
